@@ -1,0 +1,8 @@
+<%= link_to "New Book", new_book_path %>
+
+<% @books.each do |book| %>
+
+  <%= book.title %>
+  <%= book.author %>
+
+<% end %>
