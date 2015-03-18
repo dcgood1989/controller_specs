@@ -25,7 +25,7 @@ describe BooksController do
       it "creates a new book when valid parameters are passed" do
         expect {
           post :create, book: { title: "Harry Potter", author: "Some Muggle" }
-        }.to change { Book.all.count }.from(0).to(1)
+        }.to change { Book.all.count }.by(1)
 
         book = Book.last
         expect(book.title).to eq "Harry Potter"
@@ -43,7 +43,50 @@ describe BooksController do
 
         expect(flash[:notice]).to eq "Something went wrong"
         expect(response).to render_template(:new)
+        expect(assigns(:book)).to be_a(Book)
       end
+    end
+  end
+
+  describe "PATCH #update" do
+    describe "on success" do
+      it "updates a book with valid attributes" do
+        book = create_book(title: "Harry Potter", author: "Some Muggle")
+
+        expect {
+          patch :update, id: book.id, book: { title: "Harry Potter", author: "JK Rowling" }
+        }.to change { book.reload.author }.from("Some Muggle").to("JK Rowling")
+
+        expect(flash[:notice]).to eq "Book updated"
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    describe "on failure" do
+      it "does not update a book with invalid credentials" do
+        book = create_book(title: "Harry Potter", author: "Some Muggle")
+
+        expect {
+          patch :update, id: book.id, book: { title: nil, author: "JK Rowling" }
+        }.to_not change { book.reload.title }
+
+        expect(assigns(:book)).to eq(book)
+        expect(flash[:notice]).to eq "Unable to update book"
+        expect(response).to render_template(:edit)
+      end
+    end
+  end
+
+  describe "DELETE #destroy" do
+    it "deletes a book" do
+      book = create_book
+
+      expect {
+        delete :destroy, id: book.id
+      }.to change { Book.all.count }.by(-1)
+
+      expect(flash[:notice]).to eq "Book destroyed"
+      expect(response).to redirect_to root_path
     end
   end
 end

@@ -18,6 +18,22 @@ class BooksController < ApplicationController
     end
   end
 
+  def update
+    book = Book.find(params[:id])
+    if book.update(book_params)
+      redirect_to root_path, notice: "Book updated"
+    else
+      @book = book
+      flash[:notice] = "Unable to update book"
+      render :edit
+    end
+  end
+
+  def destroy
+    Book.destroy(params[:id])
+    redirect_to root_path, notice: "Book destroyed"
+  end
+
   private
 
   def book_params
