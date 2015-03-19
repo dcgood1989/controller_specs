@@ -62,7 +62,7 @@ describe BooksController do
       end
     end
 
-    describe "on failure" do
+     describe "on failure" do
       it "does not update a book with invalid credentials" do
         book = create_book(title: "Harry Potter", author: "Some Muggle")
 
